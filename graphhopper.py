@@ -49,7 +49,15 @@ if json_status == 200:
             lng="null"
             new_loc=location
         return json_status,lat,lng, new_loc
-    orig = geocoding(loc1, key)
-    print(orig)
-    dest = geocoding(loc2, key)
-    print(dest) 
+    while True:
+        loc1 = input("Starting Location: ")
+        if loc1 == "quit" or loc1 == "q":
+            break 
+        orig = geocoding(loc1, key)
+        print(orig)
+        loc2 = input("Destination: ")
+        if loc2 == "quit" or loc2 == "q":
+            break
+        dest = geocoding(loc2, key)
+        print(dest) 
+
