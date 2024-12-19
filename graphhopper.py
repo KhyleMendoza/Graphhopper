@@ -1,6 +1,9 @@
 import requests
 import urllib.parse
 from tabulate import tabulate
+from colorama import Fore, Style, init
+
+init(autoreset=True)
 
 geocode_url = "https://graphhopper.com/api/1/geocode?"
 route_url = "https://graphhopper.com/api/1/route?"
@@ -9,7 +12,7 @@ key = "3e362481-1590-4c04-a78c-e46fa8b12184"
 def geocoding(location, key):
     while True:
         if location.strip() == "":
-            location = input("Location cannot be empty. Please enter the location again: ")
+            location = input(Fore.RED + "Location cannot be empty. Please enter the location again: ")
         url = geocode_url + urllib.parse.urlencode({"q": location, "limit": "1", "key": key})
         replydata = requests.get(url)
         json_data = replydata.json()
@@ -29,33 +32,36 @@ def geocoding(location, key):
             else:
                 new_loc = name
 
-            print(f"Geocoding API URL for {new_loc} (Location Type: {value})\n{url}")
+            print(Fore.BLUE + f"Geocoding API URL for {new_loc} (Location Type: {value}): {url}")
             return json_status, lat, lng, new_loc
         else:
-            print(f"{location} doesn't exist. Please try again.")
+            print(Fore.RED + f"{location} doesn't exist. Please try again.")
             location = input("Enter the location again: ")
 
 while True:
     print("\n+++++++++++++++++++++++++++++++++++++++++++++")
     print("Vehicle profiles available on Graphhopper:")
     print("+++++++++++++++++++++++++++++++++++++++++++++")
-    print("car, bike, foot")
+    print("🚗 car, 🚴 bike, 🚶 foot")
     print("+++++++++++++++++++++++++++++++++++++++++++++")
     profile = ["car", "bike", "foot"]
     vehicle = input("Enter a vehicle profile from the list above: ").strip().lower()
     if vehicle in ["quit", "q"]:
+        print("Goodbye!")
         break
     elif vehicle not in profile:
         vehicle = "car"
-        print("No valid vehicle profile was entered. Using the car profile.")
+        print("No valid vehicle profile was entered. Defaulting to 'car' profile.")
 
-    loc1 = input("Starting Location: ").strip()
+    loc1 = input("📍 Starting Location: ").strip()
     if loc1 in ["quit", "q"]:
+        print("Goodbye!")
         break
     orig = geocoding(loc1, key)
 
-    loc2 = input("Destination: ").strip()
+    loc2 = input("📍 Destination: ").strip()
     if loc2 in ["quit", "q"]:
+        print("Goodbye!")
         break
     dest = geocoding(loc2, key)
 
@@ -93,5 +99,5 @@ while True:
             ]
             print(tabulate(instructions_table, headers=["Instruction", "Distance (km)", "Distance (miles)"], tablefmt="grid"))
         else:
-            print(f"Error message: {paths_data.get('message', 'Unknown error')}")
+            print(f"Error: {paths_data.get('message', 'Unknown error')}")
             print("*************************************************")
