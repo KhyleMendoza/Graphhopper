@@ -1,5 +1,6 @@
 import requests
 import urllib.parse
+from tabulate import tabulate
 
 geocode_url = "https://graphhopper.com/api/1/geocode?"
 route_url = "https://graphhopper.com/api/1/route?"
@@ -79,15 +80,18 @@ while True:
             mins = int(paths_data["paths"][0]["time"] / 1000 / 60 % 60)
             hr = int(paths_data["paths"][0]["time"] / 1000 / 60 / 60)
 
-            print(f"Distance Traveled: {miles:.1f} miles / {km:.1f} km")
-            print(f"Trip Duration: {hr:02d}:{mins:02d}:{sec:02d}")
-            print("=================================================")
+            summary_table = [
+                ["Distance (miles)", f"{miles:.1f}"],
+                ["Distance (km)", f"{km:.1f}"],
+                ["Trip Duration (HH:MM:SS)", f"{hr:02d}:{mins:02d}:{sec:02d}"],
+            ]
+            print(tabulate(summary_table, headers=["Metric", "Value"], tablefmt="grid"))
 
-            for each in paths_data["paths"][0]["instructions"]:
-                path = each["text"]
-                distance = each["distance"]
-                print(f"{path} ( {distance/1000:.1f} km / {distance/1000/1.61:.1f} miles )")
-                print("=============================================")
+            instructions_table = [
+                [each["text"], f"{each['distance']/1000:.1f} km", f"{each['distance']/1000/1.61:.1f} miles"]
+                for each in paths_data["paths"][0]["instructions"]
+            ]
+            print(tabulate(instructions_table, headers=["Instruction", "Distance (km)", "Distance (miles)"], tablefmt="grid"))
         else:
             print(f"Error message: {paths_data.get('message', 'Unknown error')}")
             print("*************************************************")
