@@ -51,7 +51,7 @@ while True:
         break
     elif vehicle not in profile:
         vehicle = "car"
-        print("No valid vehicle profile was entered. Defaulting to 'car' profile.")
+        print(Fore.YELLOW + "No valid vehicle profile was entered. Defaulting to 'car' profile.")
 
     loc1 = input("📍 Starting Location: ").strip()
     if loc1 in ["quit", "q"]:
@@ -74,9 +74,11 @@ while True:
         paths_status = paths_response.status_code
         paths_data = paths_response.json()
 
-        print(f"Routing API Status: {paths_status}\nRouting API URL:\n{paths_url}")
+        print(f"Routing API Status: {paths_status}")
+        print("Routing API URL:")
+        print(Fore.CYAN + f"{paths_url}")
         print("=================================================")
-        print(f"Directions from {orig[3]} to {dest[3]} by {vehicle}")
+        print(Fore.GREEN + f"Directions from {orig[3]} to {dest[3]} by {vehicle}")
         print("=================================================")
 
         if paths_status == 200:
@@ -87,17 +89,17 @@ while True:
             hr = int(paths_data["paths"][0]["time"] / 1000 / 60 / 60)
 
             summary_table = [
-                ["Distance (miles)", f"{miles:.1f}"],
-                ["Distance (km)", f"{km:.1f}"],
-                ["Trip Duration (HH:MM:SS)", f"{hr:02d}:{mins:02d}:{sec:02d}"],
+                [Fore.WHITE + "Distance (miles)" + Fore.YELLOW, Fore.WHITE + f"{miles:.1f}" + Fore.YELLOW],
+                [Fore.WHITE + "Distance (km)" + Fore.YELLOW, Fore.WHITE + f"{km:.1f}" + Fore.YELLOW],
+                [Fore.WHITE + "Trip Duration (HH:MM:SS)" + Fore.YELLOW, Fore.WHITE + f"{hr:02d}:{mins:02d}:{sec:02d}" + Fore.YELLOW],
             ]
-            print(tabulate(summary_table, headers=["Metric", "Value"], tablefmt="grid"))
+            print(Fore.YELLOW + tabulate(summary_table, headers=[Fore.WHITE + "Metric" + Fore.YELLOW, Fore.WHITE + "Value" + Fore.YELLOW], tablefmt="grid"))
 
             instructions_table = [
-                [each["text"], f"{each['distance']/1000:.1f} km", f"{each['distance']/1000/1.61:.1f} miles"]
+                [Fore.WHITE + each["text"] + Fore.CYAN, Fore.WHITE + f"{each['distance']/1000:.1f} km" + Fore.CYAN, Fore.WHITE + f"{each['distance']/1000/1.61:.1f} miles" + Fore.CYAN]
                 for each in paths_data["paths"][0]["instructions"]
             ]
-            print(tabulate(instructions_table, headers=["Instruction", "Distance (km)", "Distance (miles)"], tablefmt="grid"))
+            print(Fore.CYAN + tabulate(instructions_table, headers=[Fore.WHITE +"Instruction" + Fore.CYAN, Fore.WHITE + "Distance (km)" + Fore.CYAN, Fore.WHITE + "Distance (miles)" + Fore.CYAN], tablefmt="grid"))
         else:
-            print(f"Error: {paths_data.get('message', 'Unknown error')}")
+            print(Fore.RED + f"Error: {paths_data.get('message', 'Unknown error')}")
             print("*************************************************")
